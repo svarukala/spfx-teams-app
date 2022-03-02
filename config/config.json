@@ -1,0 +1,18 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/config.2.0.schema.json",
+  "version": "2.0",
+  "bundles": {
+    "interop-app-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/interopApp/InteropAppWebPart.js",
+          "manifest": "./src/webparts/interopApp/InteropAppWebPart.manifest.json"
+        }
+      ]
+    }
+  },
+  "externals": {},
+  "localizedResources": {
+    "InteropAppWebPartStrings": "lib/webparts/interopApp/loc/{locale}.js"
+  }
+}

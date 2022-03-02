@@ -1,0 +1,16 @@
+{
+  "@microsoft/generator-sharepoint": {
+    "plusBeta": false,
+    "isCreatingSolution": true,
+    "version": "1.14.0",
+    "libraryName": "spfx-teams-app",
+    "libraryId": "71c26be8-d549-413b-9370-b8bd05597dea",
+    "environment": "spo",
+    "packageManager": "npm",
+    "solutionName": "spfx-teams-app",
+    "solutionShortDescription": "spfx-teams-app description",
+    "skipFeatureDeployment": true,
+    "isDomainIsolated": false,
+    "componentType": "webpart"
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/package-solution.schema.json",
+  "solution": {
+    "name": "spfx-teams-app-client-side-solution",
+    "id": "71c26be8-d549-413b-9370-b8bd05597dea",
+    "version": "1.0.0.0",
+    "includeClientSideAssets": true,
+    "skipFeatureDeployment": true,
+    "isDomainIsolated": false,
+    "developer": {
+      "name": "",
+      "websiteUrl": "",
+      "privacyUrl": "",
+      "termsOfUseUrl": "",
+      "mpnId": "Undefined-1.14.0"
+    },
+    "metadata": {
+      "shortDescription": {
+        "default": "spfx-teams-app description"
+      },
+      "longDescription": {
+        "default": "spfx-teams-app description"
+      },
+      "screenshotPaths": [],
+      "videoUrl": "",
+      "categories": []
+    },
+    "features": [
+      {
+        "title": "spfx-teams-app Feature",
+        "description": "The feature that activates elements of the spfx-teams-app solution.",
+        "id": "aa9505d8-44d7-49a9-99fd-8bd66e0b9f8d",
+        "version": "1.0.0.0"
+      }
+    ]
+  },
+  "paths": {
+    "zippedPackage": "solution/spfx-teams-app.sppkg"
+  }
+}
