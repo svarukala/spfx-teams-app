@@ -4,4 +4,6 @@ export interface IInteropAppProps {
   environmentMessage: string;
   hasTeamsContext: boolean;
   userDisplayName: string;
+  userEmail: string;
+  idToken: string;
 }

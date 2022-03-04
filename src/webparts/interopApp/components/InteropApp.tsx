@@ -6,6 +6,9 @@ import { escape } from '@microsoft/sp-lodash-subset';
 import { Person, PeoplePicker, FileList, Get, MgtTemplateProps } from '@microsoft/mgt-react/dist/es6/spfx';
 import { ViewType} from '@microsoft/mgt-spfx';
 import { Pivot, PivotItem, Image, List, ImageFit } from 'office-ui-fabric-react';
+//import SPOSample from './SPOSample';
+import SPOSearch from './SPOSearch';
+import ReusableApp from './ReusableApp';
 
 export default class InteropApp extends React.Component<IInteropAppProps, {}> {
   public render(): React.ReactElement<IInteropAppProps> {
@@ -14,9 +17,12 @@ export default class InteropApp extends React.Component<IInteropAppProps, {}> {
       isDarkTheme,
       environmentMessage,
       hasTeamsContext,
-      userDisplayName
+      userDisplayName,
+      userEmail,
+      idToken
     } = this.props;
 
+    console.log("idToken: " + idToken);
     return (
       <section className={`${styles.interopApp} ${hasTeamsContext ? styles.teams : ''}`}>
         <div className={styles.welcome}>
@@ -41,11 +47,19 @@ export default class InteropApp extends React.Component<IInteropAppProps, {}> {
           itemPath="/" enableFileUpload></FileList>
               </PivotItem>
           
-          <PivotItem headerText="Sites Search">
+          <PivotItem headerText="Sites Search Using MSGraph">
               <Get resource="/sites?search=contoso" scopes={['Sites.Read.All']} maxPages={2}>
                       <SiteResult template="value" />
               </Get>
           </PivotItem>
+
+          <PivotItem headerText="Sites Search Using SPO REST API">
+            {/*<SPOSample title="Hello world" subtitle="Welcome!" useremail={userEmail} ></SPOSample>*/}
+            <SPOSearch useremail={userEmail}></SPOSearch>
+          </PivotItem>
+          <PivotItem headerText="SPO Search">
+              <ReusableApp idToken={idToken} />
+            </PivotItem>
           </Pivot>
         </div>
       </section>
