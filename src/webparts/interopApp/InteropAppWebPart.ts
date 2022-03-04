@@ -75,7 +75,7 @@ export default class InteropAppWebPart extends BaseClientSideWebPart<IInteropApp
       Providers.globalProvider = new SimpleProvider(async ()=>{console.log("For simple provider"); return this.getAccessToken();}); //, async ()=>{ Providers.globalProvider.setState(ProviderState.SignedIn)}, async ()=>{});
       //new SharePointProvider(this.context);
       Providers.globalProvider.setState(ProviderState.SignedIn);
-      this.getAccessToken();
+      this.getAccessTokenNonAsync();
     }
     
     return super.onInit();
@@ -91,7 +91,7 @@ export default class InteropAppWebPart extends BaseClientSideWebPart<IInteropApp
         hasTeamsContext: !!this.context.sdks.microsoftTeams,
         userDisplayName: this.context.pageContext.user.displayName,
         userEmail: this.context.pageContext.user.email,
-        idToken: "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6Ik1yNS1BVWliZkJpaTdOZDFqQmViYXhib1hXMCJ9.eyJhdWQiOiJjNjEzZTBkMS0xNjFkLTRlYTAtOWRiNC0wZjExZWVhYmMyZmQiLCJpc3MiOiJodHRwczovL2xvZ2luLm1pY3Jvc29mdG9ubGluZS5jb20vMDQ0ZjdhODEtMTQyMi00YjNkLThmNjgtMzAwMTQ1NmU2NDA2L3YyLjAiLCJpYXQiOjE2NDYzNjY1NTEsIm5iZiI6MTY0NjM2NjU1MSwiZXhwIjoxNjQ2MzcwNDUxLCJhaW8iOiJBVFFBeS84VEFBQUF4VEh5V0hUKzBld25sbDk5R2J3b2JPSWU4UnRYSkNnK1JCYStnUFoxNVA4SUwwVWEzSzFhNTlQaUZpL3RmZzhPIiwibmFtZSI6Ik1lZ2FuIEJvd2VuIiwibm9uY2UiOiI1ZTY4NGEyZC0wOTMxLTRjZWMtYjIxYy1mNmFjZGMwNjYwMjYiLCJvaWQiOiI0Y2IwOGRjYi1iNTBlLTRlZTYtOTcxMi0wM2ZkNGM3NDZhNmMiLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJNZWdhbkJATTM2NXgyMjk5MTAuT25NaWNyb3NvZnQuY29tIiwicmgiOiIwLkFUY0FnWHBQQkNJVVBVdVBhREFCUlc1a0J0SGdFOFlkRnFCT25iUVBFZTZyd3YwM0FITS4iLCJzdWIiOiJSTzNrWmliRHFjZ3oyZUJPQUt4VUd6R2RIUkplU3pORFFaTGUyT1h5WVV3IiwidGlkIjoiMDQ0ZjdhODEtMTQyMi00YjNkLThmNjgtMzAwMTQ1NmU2NDA2IiwidXRpIjoiSmY2ZEVYakJVMEtKcjhUcnUyaWtBQSIsInZlciI6IjIuMCJ9.MaRvESj2bCFrc7STnOrPtC-4S-4fgA_BIbr5qsV6SG_rOa8kHLUcK4takQMz8-CjNE41dcoQa5t2u_cLFf0dUxT3oio-kSP3aG55O-27V5TIF-t5i8ogX9qQPJ3cD0guZeWrHjIXkqh87E9lPhxVWUT0CfkKlwOtz30VpoOVNZYQ_nwNqh9zGUbdcVXz0ASZFLwcr2GRt6Dz8WdCX2DgIyDPSU6oUTPDAHyNAAqP8Oa2YYUMzGsEFPXZN63Jiqa66LEV_piq4ZvYp6lRSVkYq025LCcDQpSlLVwlai5vC-ZxH0vwokp7qOGSDQ77oC4xiVSuU7oOPW0tGj3mSsAqHg"
+        idToken: idTokenVal
       }
     );
 
@@ -169,6 +169,48 @@ export default class InteropAppWebPart extends BaseClientSideWebPart<IInteropApp
     }
     tokenrequest.account = currentAccount;
   }; 
+
+  protected getAccessTokenNonAsync() {
+    console.log("Getting access token");
+    let accessToken: string = null;
+    this.setCurrentAccount();
+    console.log(currentAccount);
+    return msalInstance
+      .acquireTokenSilent(tokenrequest)
+      .then((tokenResponse) => {
+        console.log("Inside Silent");
+        console.log("Access token: "+ tokenResponse.accessToken);
+        console.log("ID token: "+ tokenResponse.idToken);
+        idTokenVal = tokenResponse.idToken;
+        return tokenResponse.accessToken;
+      })
+      .catch((err) => {
+        console.log(err);
+        console.log("Silent Failed");
+        if (err instanceof InteractionRequiredAuthError) {
+          return this.interactionRequired();
+        } else {
+          console.log("Some other error. Inside SSO.");
+          //const loginPopupRequest: AuthorizationUrlRequest = tokenrequest;
+          const loginPopupRequest: AuthorizationUrlRequest = tokenrequest as AuthorizationUrlRequest;
+          loginPopupRequest.loginHint = this.context.pageContext.user.loginName;
+          return msalInstance
+            .ssoSilent(loginPopupRequest)
+            .then((tokenResponse) => {
+              idTokenVal = tokenResponse.idToken;
+              return tokenResponse.accessToken;
+            })
+            .catch((ssoerror) => {
+              console.error(ssoerror);
+              console.error("SSO Failed");
+              if (ssoerror) {
+                return this.interactionRequired();
+              }
+              return null;
+            });
+        }
+      });
+  };
 
   protected getAccessToken = async (): Promise<string> => {
     console.log("Getting access token");
